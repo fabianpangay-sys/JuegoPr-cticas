@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Resultados del Juego</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #fff;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 500;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card h3 {
+            font-size: 3em;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-card p {
+            color: #aaa;
+            margin-top: 10px;
+        }
+        
+        .tables-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 1000px) {
+            .tables-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .table-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .table-section h2 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .table-section h2::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, #00d9ff, #00ff88);
+            border-radius: 2px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .data-table th {
+            background: rgba(255, 255, 255, 0.1);
+            font-weight: 600;
+            color: #00d9ff;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 1px;
+        }
+        
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .data-table td {
+            color: #ddd;
+        }
+        
+        .scrollable {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .scrollable::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .scrollable::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+        
+        .scrollable::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #aaa;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 40px;
+            color: #ff6b6b;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+        }
+        
+        .badge-success {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .badge-warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        .badge-danger {
+            background: rgba(255, 107, 107, 0.2);
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.htm" class="back-btn">← Volver al Juego</a>
+        
+        <header>
+            <h1>📊 Panel de Administración</h1>
+            <p>Resultados y estadísticas del Descifrador Neurocognitivo</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalPlayers">0</h3>
+                <p>Total Jugadores</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="totalGames">0</h3>
+                <p>Partidas Jugadas</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="avgScore">0</h3>
+                <p>Puntuación Promedio</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="avgTime">0</h3>
+                <p>Tiempo Promedio (seg)</p>
+            </div>
+        </div>
+        
+        <div class="tables-container">
+            <div class="table-section">
+                <h2>Últimas Puntuaciones</h2>
+                <div id="scoresContainer" class="scrollable">
+                    <div class="loading">Cargando puntuaciones...</div>
+                </div>
+            </div>
+            
+            <div class="table-section">
+                <h2>Jugadores Registrados</h2>
+                <div id="playersContainer" class="scrollable">
+                    <div class="loading">Cargando jugadores...</div>
+                </div>
+            </div>
+        </div>
+    
+    <script>
+        // Verificar autenticación
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = 'index.htm';
+        }
+        
+        // Cargar datos desde la base de datos
+        async function loadData() {
+            try {
+                // Cargar estadísticas generales
+                const statsResponse = await fetch('/api/estadisticas-generales');
+                const statsData = await statsResponse.json();
+                
+                if (statsData.success) {
+                    document.getElementById('totalPlayers').textContent = statsData.data.totalPlayers || 0;
+                    document.getElementById('totalGames').textContent = statsData.data.totalGames || 0;
+                    document.getElementById('avgScore').textContent = Math.round(statsData.data.avgScore) || 0;
+                    document.getElementById('avgTime').textContent = Math.round(statsData.data.avgTime) || 0;
+                }
+                
+                // Cargar puntuaciones
+                const scoresResponse = await fetch('/api/mejores-puntuaciones?limite=100');
+                const scoresData = await scoresResponse.json();
+                
+                if (scoresData.success) {
+                    displayScores(scoresData.data);
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar datos:', error);
+                document.getElementById('scoresContainer').innerHTML = 
+                    '<div class="error">Error al cargar los datos. Verifica la conexión al servidor.</div>';
+            }
+        }
+        
+        function displayScores(scores) {
+            const container = document.getElementById('scoresContainer');
+            
+            if (!scores || scores.length === 0) {
+                container.innerHTML = '<div class="loading">No hay puntuaciones registradas aún.</div>';
+                return;
+            }
+            
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Jugador</th>
+                            <th>Puntos</th>
+                            <th>Nivel</th>
+                            <th>Tiempo</th>
+                            <th>Errores</th>
+                            <th>Pistas</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            scores.forEach(score => {
+                const date = new Date(score.fecha_registro).toLocaleDateString('es-ES');
+                const time = score.tiempo_juego ? `${Math.floor(score.tiempo_juego / 60)}:${(score.tiempo_juego % 60).toString().padStart(2, '0')}` : 'N/A';
+                const errors = score.errores || 0;
+                const hints = score.pistas_usadas || 0;
+                
+                let errorBadge = 'badge-success';
+                if (errors > 5) errorBadge = 'badge-warning';
+                if (errors > 10) errorBadge = 'badge-danger';
+                
+                html += `
+                    <tr>
+                        <td>${score.nombre_jugador}</td>
+                        <td><strong>${score.puntuacion}</strong></td>
+                        <td>${score.nivel}</td>
+                        <td>${time}</td>
+                        <td><span class="badge ${errorBadge}">${errors}</span></td>
+                        <td>${hints}</td>
+                        <td>${date}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+        
+        // Inicializar
+        loadData();
+    </script>
+</body>
+</html>

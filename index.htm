@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>El Código Secreto</title>
+    <link rel="stylesheet" href="estilos.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Botón de administrador */
+        #adminBtn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 3px solid #fff;
+            color: white;
+            font-size: 2em;
+            cursor: pointer;
+            z-index: 99999;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.6);
+            transition: transform 0.3s ease;
+        }
+        #adminBtn:hover {
+            transform: scale(1.1);
+        }
+        
+        /* Modal */
+        #adminModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100000;
+        }
+        #adminModal .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            margin: 15% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            color: white;
+            border: 2px solid rgba(102, 126, 234, 0.5);
+        }
+        #adminModal h2 {
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
+        #adminModal input {
+            width: 100%;
+            padding: 15px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1em;
+        }
+        #adminModal input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        #adminModal button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        #adminModal .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #aaa;
+        }
+        #adminModal .close-btn:hover {
+            color: white;
+        }
+        #adminModal .error {
+            color: #ff6b6b;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Pantalla de inicio -->
+<div id="startScreen">
+    <div class="start-content">
+        <div class="start-split">
+            <div class="start-image-container">
+                <img src="imagenes/Personaje_llamado__D-removebg-preview.png" alt="Personaje" class="start-image">
+            </div>
+            <div class="start-text-container">
+                <h1 class="start-title">El Código Secreto</h1>
+                <p class="start-subtitle">Descifra el mensaje usando las palabras clave</p>
+                
+                <div class="name-input-container">
+                    <input type="text" id="studentName" placeholder="Ingresa tu nombre" maxlength="30" autocomplete="off">
+                    <label for="studentName">¿Cuál es tu nombre?</label>
+                </div>
+                
+                <button id="startBtn" class="start-btn">
+                    <span>Comenzar Juego</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+                
+                <p class="start-hint-text">¡Descubre el código secreto descifrando los símbolos!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<header>
+    <button id="fullscreenBtn" class="fullscreen-btn" title="Pantalla completa">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
+        </svg>
+    </button>
+    <h1>🧠 El Código Secreto</h1>
+    <p>Descifra el mensaje usando las palabras clave</p>
+    <div id="studentInfo"></div>
+</header>
+
+<main>
+    <aside>
+        <h2>Palabras Clave</h2>
+        <div id="keyWords"></div>
+    </aside>
+
+    <section>
+        <div id="progress"></div>
+
+        <div id="encoded"></div>
+
+        <div class="instructions">
+            <p>💡 Escribe la frase descifrada y presiona verificar</p>
+        </div>
+
+        <input id="answer" type="text" placeholder="Escribe aquí la respuesta...">
+
+        <div class="buttons">
+            <button id="check">Verificar</button>
+            <button id="hint">💡 Pista</button>
+        </div>
+
+        <div id="feedback"></div>
+    </section>
+</main>
+
+<!-- Botón de administrador -->
+<button id="adminBtn">👨‍🏫</button>
+
+<!-- Modal de autenticación admin -->
+<div id="adminModal">
+    <div class="modal-content">
+        <span class="close-btn">&times;</span>
+        <h2>🔐 Acceso de Administrador</h2>
+        <p>Ingresa la contraseña:</p>
+        <input type="password" id="adminPassword" placeholder="Contraseña">
+        <button id="adminLoginBtn">Ingresar</button>
+        <p id="adminError" class="error"></p>
+    </div>
+</div>
+
+<script>
+const ADMIN_PASSWORD = 'FJPRMPVR2023';
+
+const adminBtn = document.getElementById('adminBtn');
+const adminModal = document.getElementById('adminModal');
+const closeBtn = document.querySelector('.close-btn');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminPasswordInput = document.getElementById('adminPassword');
+const adminError = document.getElementById('adminError');
+
+adminBtn.addEventListener('click', () => {
+    adminModal.style.display = 'block';
+    adminPasswordInput.value = '';
+    adminError.textContent = '';
+    adminPasswordInput.focus();
+});
+
+closeBtn.addEventListener('click', () => {
+    adminModal.style.display = 'none';
+});
+
+adminModal.addEventListener('click', (e) => {
+    if (e.target === adminModal) {
+        adminModal.style.display = 'none';
+    }
+});
+
+adminLoginBtn.addEventListener('click', () => {
+    const password = adminPasswordInput.value;
+    if (password === ADMIN_PASSWORD) {
+        localStorage.setItem('adminToken', 'admin-token-' + Date.now());
+        adminModal.style.display = 'none';
+        window.location.href = 'admin.html';
+    } else {
+        adminError.textContent = 'Contraseña incorrecta';
+    }
+});
+
+adminPasswordInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        adminLoginBtn.click();
+    }
+});
+</script>
+
+<script src="game.js"></script>
+</body>
+</html>
